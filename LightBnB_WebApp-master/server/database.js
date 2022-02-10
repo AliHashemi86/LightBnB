@@ -28,7 +28,7 @@ const getUserWithEmail = function(email) {
       return result.rows[0];
     })
     .catch(err => {
-      console.error(err.message);
+      return err.message;
     });
 };
 exports.getUserWithEmail = getUserWithEmail;
@@ -50,7 +50,7 @@ const getUserWithId = function(id) {
       return (result.rows[0]);
     })
     .catch(err => {
-      console.error(err.message);
+      return err.message;
     });
 };
 exports.getUserWithId = getUserWithId;
@@ -71,7 +71,7 @@ const addUser =  function(user) {
       return (result.rows[0]);
     })
     .catch(err => {
-      console.error(err.message);
+      return err.message;
     });
 };
 exports.addUser = addUser;
@@ -84,7 +84,19 @@ exports.addUser = addUser;
  * @return {Promise<[{}]>} A promise to the reservations.
  */
 const getAllReservations = function(guest_id, limit = 10) {
-  return getAllProperties(null, 2);
+  return pool
+    .query(
+      `SELECT * FROM reservations
+      JOIN properties ON properties.id = property_id
+      WHERE guest_id = $1
+      LIMIT $2
+    `, [guest_id, limit])
+    .then(result => {
+      return result.rows;
+    })
+    .catch(err => {
+      return err.message;
+    });
 };
 exports.getAllReservations = getAllReservations;
 
